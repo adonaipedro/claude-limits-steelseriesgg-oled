@@ -10,7 +10,7 @@ SDK. No third-party Python dependencies.
 
 Two bars, with the text rendered inside each one:
 
-![Preview of the two limit bars on the DAC OLED](sample_preview.png)
+![Preview of the two limit bars on the DAC OLED](sample_preview.jpeg)
 
 ```text
 [ 5h 37% 2h ]
