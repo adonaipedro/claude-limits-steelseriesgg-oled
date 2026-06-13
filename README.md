@@ -1,5 +1,7 @@
 # Claude Code Limits on SteelSeries OLED
 
+[![Tests](https://github.com/adonaipedro/claude-limits-steelseriesgg-oled/actions/workflows/tests.yml/badge.svg)](https://github.com/adonaipedro/claude-limits-steelseriesgg-oled/actions/workflows/tests.yml)
+
 Local bridge that shows your Claude Code usage limits (5-hour + weekly) on the OLED
 screen of a SteelSeries Arctis Nova Pro Wireless DAC / Base Station, via the GameSense
 SDK. No third-party Python dependencies.
