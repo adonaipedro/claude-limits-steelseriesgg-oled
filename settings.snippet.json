@@ -1,0 +1,8 @@
+{
+  "statusLine": {
+    "type": "command",
+    "command": "python ~/.claude/claude_gamesense_statusline.py",
+    "padding": 2,
+    "refreshInterval": 10
+  }
+}

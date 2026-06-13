@@ -1,0 +1,77 @@
+name: Release
+
+# Tag a commit `vX.Y.Z` (or run manually) to publish per-platform zips.
+# This project is pure Python + installers, so there is no compile step --
+# a "release" just bundles the right files for each OS and attaches them.
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Version tag for a manual release (e.g. v1.0.0)'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve version
+        id: ver
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "tag=${{ inputs.tag }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build bundles
+        run: |
+          set -euo pipefail
+          VER="${{ steps.ver.outputs.tag }}"
+          NAME="claude-code-limits-steelseries-oled"
+          mkdir -p dist
+
+          # Windows bundle: status-line bridge + background daemon + launcher.
+          mkdir -p pkg-windows
+          cp claude_gamesense_statusline.py \
+             dac_subscription_daemon.py \
+             update_settings.py \
+             install_windows.ps1 \
+             start_dac.vbs \
+             dac_config.json \
+             README.md \
+             sample_preview.png \
+             pkg-windows/
+          (cd pkg-windows && zip -r "../dist/${NAME}-${VER}-windows.zip" .)
+
+          # Linux bundle: status-line bridge only -- the daemon (start_dac.vbs,
+          # GG SQLite toggle, pythonw) is Windows-specific.
+          mkdir -p pkg-linux
+          cp claude_gamesense_statusline.py \
+             update_settings.py \
+             install_unix.sh \
+             dac_config.json \
+             README.md \
+             sample_preview.png \
+             pkg-linux/
+          (cd pkg-linux && zip -r "../dist/${NAME}-${VER}-linux.zip" .)
+
+          # Checksums for both archives.
+          (cd dist && sha256sum *.zip > SHA256SUMS.txt)
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          VER="${{ steps.ver.outputs.tag }}"
+          gh release create "$VER" dist/*.zip dist/SHA256SUMS.txt \
+            --title "$VER" \
+            --generate-notes

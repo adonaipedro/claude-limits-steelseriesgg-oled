@@ -1,0 +1,10 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+
+# Local Claude Code overrides (machine-specific permissions/paths)
+.claude/settings.local.json
+
+# Runtime state written to the repo dir during dev
+*.tmp
+.broken-backup
